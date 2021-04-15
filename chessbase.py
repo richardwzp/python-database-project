@@ -3,10 +3,9 @@ import pymysql as sql
 from converter.pgn_data import PGNData
 import csv
 from math import ceil
+import os
+from flask import Flask, redirect, url_for, request
 
-def convert(data: str):
-    # TODO: make the pgn
-    x = 1
 
 def import_pgn_to_sql(pgn_file_name):
     # logging into sql
@@ -21,7 +20,7 @@ def import_pgn_to_sql(pgn_file_name):
 
     # creating pgn data
     pgn_data = PGNData(pgn_file_name)
-
+    pgn_data.export()
 
     # opening csv files
     file_name = pgn_file_name[0:-4] + "_moves.csv"
@@ -60,7 +59,7 @@ def import_pgn_to_sql(pgn_file_name):
             stmt_insert_black_player = f'INSERT INTO Player (Username, ELO) VALUES ("{black_player_user_name}", {black_elo});'
             cur.execute(stmt_insert_black_player)
 
-        # create the game
+        # create time control if not exists
         stmt_select_timeControl = f'SELECT ID AS id FROM TimeControl ' \
                       f'WHERE TimeControl.Length={time_control[0]} AND TimeControl.Increment={time_control[1]};'
         cur.execute(stmt_select_timeControl)
@@ -78,7 +77,7 @@ def import_pgn_to_sql(pgn_file_name):
                       f'(Date("{game_date}"), "{black_player_user_name}", "{white_player_user_name}", "{winner}",{time_control_id});'
         cur.execute(stmt_insert_game)
 
-    # create time control if not exists
+    # select game id of current game
         stmt_select_game = f'SELECT GameID AS id FROM Game WHERE GameDate=Date("{game_date}") AND ' \
                            f'BlackPlayer="{black_player_user_name}" AND WhitePlayer="{white_player_user_name}" ' \
                            f'AND Winner="{winner}" AND TimeControl={time_control_id} ORDER BY GameID DESC LIMIT 1;'
@@ -110,5 +109,39 @@ def import_pgn_to_sql(pgn_file_name):
     cnx.commit()
     cur.close()
     cnx.close()
+    os.remove(file_name)
+    os.remove(file_info_name)
 
-import_pgn_to_sql("wzprichard_vs_pleaslucian_2021.04.03.pgn")
+
+
+app = Flask(__name__)
+@app.route('/update', methods = ['POST'])
+def update():
+    #
+    recieved_data = request.json
+    if type(recieved_data) is not str:
+        return "not sucessful"
+    # convert(recieved_data)
+
+    print(type(recieved_data), recieved_data)
+
+    return "sucessful update!"
+
+    #convert(data)
+
+
+def convert(data: str):
+    # TODO: make the pgn
+    with open("myfile.pgn", "w") as new_pgn:
+        new_pgn.write(data)
+
+    import_pgn_to_sql("myfile.pgn")
+    os.remove("myfile.pgn")
+
+
+if __name__ == '__main__':
+    # run app in debug mode on port 5000
+    app.run(debug=False, port=5000)
+    # with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
+    #     content = file.read()
+    #     convert(content)
