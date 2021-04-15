@@ -5,7 +5,7 @@ import csv
 from math import ceil
 import os
 from flask import Flask, redirect, url_for, request
-
+import json
 
 def import_pgn_to_sql(pgn_file_name):
     # logging into sql
@@ -113,6 +113,18 @@ def import_pgn_to_sql(pgn_file_name):
     os.remove(file_info_name)
 
 
+def server_connection():
+    # logging into sql
+    user = "root"
+    password = ""
+    with open("password", "r") as file:
+        password = file.readline().strip()
+    cnx = sql.connect(host="localhost", user=user, password=password,
+                      db="chess_base", charset="utf8mb4",
+                      cursorclass=sql.cursors.DictCursor)
+    cur = cnx.cursor()
+    return cur, cnx
+
 
 app = Flask(__name__)
 @app.route('/update', methods = ['POST'])
@@ -121,13 +133,54 @@ def update():
     recieved_data = request.json
     if type(recieved_data) is not str:
         return "not sucessful"
-    # convert(recieved_data)
+
+    convert(recieved_data)
 
     print(type(recieved_data), recieved_data)
 
     return "sucessful update!"
 
-    #convert(data)
+@app.route('/positionQuery', methods = ['get'])
+def positionQuery():
+    # [{player1, player2, player1rank(nullable), player2rank, winner, timecontrol}]
+    cur, cnx = server_connection()
+    fen, next_move = request.args["position"], request.args["nextMove"]
+
+    #fen, next_move = "r1b1kb1r/pp2nppp/1qn1p3/3pP3/3P4/5N2/PP2BPPP/RNBQK2R", "White"
+
+    stmt_select_chess_position = f'SELECT GameID FROM GamePositionRelationship ' \
+                  f'WHERE Position = "{fen}" AND NextTurn = "{next_move}";'
+
+    cur.execute(stmt_select_chess_position)
+    all_game_id = [int(i["GameID"]) for i in cur.fetchall()]
+
+    all_games = []
+    for game_id in all_game_id:
+        stmt_select_game = f'SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, Winner, TimeControl' \
+                    f' FROM Game WHERE GameID = {game_id}'
+        cur.execute(stmt_select_game)
+        all_games.append(cur.fetchall()[0])
+
+        stmt_select_black_player = f'SELECT PlayerRank AS ranking FROM' \
+                                   f' Player WHERE Username = "{all_games[-1]["BlackPlayer"]}"'
+        cur.execute(stmt_select_black_player)
+        all_games[-1]["BlackPlayerRank"] = cur.fetchall()[0]["ranking"]
+
+        stmt_select_white_player = f'SELECT PlayerRank AS ranking FROM' \
+                                   f' Player WHERE Username = "{all_games[-1]["WhitePlayer"]}"'
+        cur.execute(stmt_select_white_player)
+        all_games[-1]["WhitePlayerRank"] = cur.fetchall()[0]["ranking"]
+
+
+    # change date to string
+    for i in all_games:
+        i["date"] = str(i["date"])
+
+    cur.close()
+    cnx.close()
+    return json.dumps(all_games)
+
+
 
 
 def convert(data: str):
@@ -139,9 +192,11 @@ def convert(data: str):
     os.remove("myfile.pgn")
 
 
+
 if __name__ == '__main__':
     # run app in debug mode on port 5000
     app.run(debug=False, port=5000)
-    # with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
-    #     content = file.read()
-    #     convert(content)
+    #with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
+     #   content = file.read()
+      #  convert(content)
+    #positionQuery()
