@@ -140,6 +140,8 @@ def update():
 
     return "sucessful update!"
 
+
+
 @app.route('/positionQuery', methods = ['get'])
 def positionQuery():
     # [{player1, player2, player1rank(nullable), player2rank, winner, timecontrol}]
