@@ -1,0 +1,2 @@
+game_id,game_order,event,site,date_played,round,white,black,result,white_elo,white_rating_diff,black_elo,black_rating_diff,winner,winner_elo,loser,loser_elo,winner_loser_elo_diff,eco,termination,time_control,utc_date,utc_time,variant,ply_count,date_created,file_name
+c3dd5bc4-509f-41ed-a530-2ed89914b58a,1,Live Chess,Chess.com,2021.04.11,?,wzprichard,ivanchuk86,1/2-1/2,1574,,1579,,draw,,draw,,0,C15,Game drawn by repetition,180,,,,,2021-04-13T00:47:05+0000,wzprichard_vs_ivanchuk86_2021.04.11.pgn

@@ -1,0 +1,46 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2021.04.03"]
+[Round "?"]
+[White "wzprichard"]
+[Black "pleaslucian"]
+[Result "1-0"]
+[ECO "C41"]
+[WhiteElo "1577"]
+[BlackElo "1598"]
+[TimeControl "180"]
+[EndTime "20:49:45 PDT"]
+[Termination "wzprichard won on time"]
+
+1. e4 {[%timestamp 1]} 1... e5 {[%timestamp 1]} 2. Nf3 {[%timestamp 5]} 2... d6
+{[%timestamp 5]} 3. Bc4 {[%timestamp 6]} 3... Bg4 {[%timestamp 12]} 4. d3
+{[%timestamp 19]} 4... Qf6 {[%timestamp 11]} 5. Nc3 {[%timestamp 60]} 5... c6
+{[%timestamp 11]} 6. Be3 {[%timestamp 23]} 6... Bxf3 {[%timestamp 9]} 7. gxf3
+{[%timestamp 10]} 7... Qd8 {[%timestamp 51]} 8. Qd2 {[%timestamp 18]} 8... h6
+{[%timestamp 13]} 9. O-O-O {[%timestamp 26]} 9... Nf6 {[%timestamp 8]} 10. Rhg1
+{[%timestamp 31]} 10... g5 {[%timestamp 7]} 11. h4 {[%timestamp 34]} 11... gxh4
+{[%timestamp 63]} 12. f4 {[%timestamp 17]} 12... Nbd7 {[%timestamp 28]} 13. f5
+{[%timestamp 211]} 13... a5 {[%timestamp 15]} 14. a3 {[%timestamp 150]} 14... b5
+{[%timestamp 23]} 15. Ba2 {[%timestamp 16]} 15... b4 {[%timestamp 10]} 16. Nb1
+{[%timestamp 119]} 16... c5 {[%timestamp 42]} 17. f4 {[%timestamp 19]} 17... Be7
+{[%timestamp 253]} 18. fxe5 {[%timestamp 63]} 18... Nxe5 {[%timestamp 11]} 19.
+Rdf1 {[%timestamp 55]} 19... Nfg4 {[%timestamp 213]} 20. Bf4 {[%timestamp 114]}
+20... f6 {[%timestamp 49]} 21. d4 {[%timestamp 102]} 21... Nf7 {[%timestamp 75]}
+22. Bxf7+ {[%timestamp 43]} 22... Kxf7 {[%timestamp 24]} 23. Rxg4 {[%timestamp
+10]} 23... bxa3 {[%timestamp 107]} 24. Nxa3 {[%timestamp 16]} 24... a4
+{[%timestamp 35]} 25. e5 {[%timestamp 87]} 25... cxd4 {[%timestamp 72]} 26. e6+
+{[%timestamp 24]} 26... Ke8 {[%timestamp 35]} 27. Qd3 {[%timestamp 128]} 27...
+Qb6 {[%timestamp 28]} 28. Qb5+ {[%timestamp 58]} 28... Qxb5 {[%timestamp 12]}
+29. Nxb5 {[%timestamp 1]} 29... Ra5 {[%timestamp 56]} 30. Nxd6+ {[%timestamp
+25]} 30... Bxd6 {[%timestamp 8]} 31. Bxd6 {[%timestamp 3]} 31... Rd5
+{[%timestamp 50]} 32. Ba3 {[%timestamp 17]} 32... Kd8 {[%timestamp 74]} 33. Rg7
+{[%timestamp 16]} 33... d3 {[%timestamp 28]} 34. Rd1 {[%timestamp 30]} 34... Kc8
+{[%timestamp 61]} 35. Rxd3 {[%timestamp 15]} 35... Rxf5 {[%timestamp 102]} 36.
+Rdd7 {[%timestamp 39]} 36... Rf1+ {[%timestamp 20]} 37. Kd2 {[%timestamp 8]}
+37... Rd8 {[%timestamp 7]} 38. Rxd8+ {[%timestamp 18]} 38... Kxd8 {[%timestamp
+10]} 39. Rg8+ {[%timestamp 13]} 39... Kc7 {[%timestamp 13]} 40. e7 {[%timestamp
+15]} 40... Rf2+ {[%timestamp 21]} 41. Ke1 {[%timestamp 8]} 41... Rxc2
+{[%timestamp 42]} 42. e8=Q {[%timestamp 10]} 42... Rc1+ {[%timestamp 17]} 43.
+Kd2 {[%timestamp 9]} 43... Rf1 {[%timestamp 28]} 44. Qe6 {[%timestamp 11]} 44...
+Rf2+ {[%timestamp 13]} 45. Ke1 {[%timestamp 9]} 45... Rxb2 {[%timestamp 8]} 46.
+Rg7+ {[%timestamp 7]} 46... Kb8 {[%timestamp 11]} 47. Bxb2 {[%timestamp 18]} 1-0

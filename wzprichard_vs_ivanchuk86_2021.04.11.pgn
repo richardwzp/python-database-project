@@ -1,0 +1,31 @@
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2021.04.11"]
+[Round "?"]
+[White "wzprichard"]
+[Black "ivanchuk86"]
+[Result "1/2-1/2"]
+[ECO "C15"]
+[WhiteElo "1574"]
+[BlackElo "1579"]
+[TimeControl "180"]
+[EndTime "7:28:06 PDT"]
+[Termination "Game drawn by repetition"]
+
+1. e4 {[%timestamp 1]} 1... e6 {[%timestamp 20]} 2. d4 {[%timestamp 20]} 2... d5
+{[%timestamp 8]} 3. Nc3 {[%timestamp 15]} 3... Bb4 {[%timestamp 22]} 4. Bd3
+{[%timestamp 33]} 4... Nd7 {[%timestamp 33]} 5. a3 {[%timestamp 18]} 5... Bxc3+
+{[%timestamp 82]} 6. bxc3 {[%timestamp 1]} 6... c5 {[%timestamp 20]} 7. exd5
+{[%timestamp 84]} 7... exd5 {[%timestamp 22]} 8. Nf3 {[%timestamp 13]} 8... Ngf6
+{[%timestamp 26]} 9. Bg5 {[%timestamp 31]} 9... O-O {[%timestamp 15]} 10. O-O
+{[%timestamp 14]} 10... Qb6 {[%timestamp 72]} 11. Rb1 {[%timestamp 58]} 11...
+Qa5 {[%timestamp 84]} 12. Qd2 {[%timestamp 50]} 12... c4 {[%timestamp 42]} 13.
+Be2 {[%timestamp 30]} 13... Qxa3 {[%timestamp 9]} 14. Ne5 {[%timestamp 34]}
+14... Qd6 {[%timestamp 56]} 15. Qf4 {[%timestamp 106]} 15... h6 {[%timestamp
+53]} 16. Bh4 {[%timestamp 56]} 16... g5 {[%timestamp 9]} 17. Bxg5 {[%timestamp
+10]} 17... hxg5 {[%timestamp 18]} 18. Qxg5+ {[%timestamp 10]} 18... Kh8
+{[%timestamp 105]} 19. Qh6+ {[%timestamp 74]} 19... Kg8 {[%timestamp 158]} 20.
+Qg5+ {[%timestamp 60]} 20... Kh7 {[%timestamp 45]} 21. Qh4+ {[%timestamp 85]}
+21... Kg7 {[%timestamp 130]} 22. Qg5+ {[%timestamp 16]} 22... Kh8 {[%timestamp
+20]} 23. Qh6+ {[%timestamp 65]} 23... Kg8 {[%timestamp 13]} 24. Qg5+
+{[%timestamp 15]} 1/2-1/2
