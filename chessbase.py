@@ -140,7 +140,78 @@ def update():
 
     return "sucessful update!"
 
+# TODO: udpate a player
+# TODO: you will be given a name, position, mainline (mainline can be null)
+# TODO: get request - deleteplayer just delete the player
+# TODO: post request - update player - given a json with {name:,rank:,}
 
+# TODO: create/overwrite opening
+@app.route('/openingUpdate', methods=['get'])
+def openingUpdate():
+    cur, cnx = server_connection()
+    opening_name, opening_fen = request.args["name"], request.args["fen"]
+    stmt_select_opening = f'SELECT COUNT(*) AS openingCount FROM Opening WHERE Name = "{opening_name}"'
+    cur.execute(stmt_select_opening)
+    if int(cur.fetchall()[0]["openingCount"]) == 0:
+        stmt_insert = f'INSERT INTO Opening (Name, Position) VALUES ({opening_name}, {opening_fen});'
+        cur.execute(stmt_insert)
+    else:
+        stmt_update = f'UPDATE Opening ' \
+                      f'SET Position="{opening_fen}" ' \
+                      f'WHERE Name="{opening_name}";'
+        cur.execute(stmt_update)
+
+    cnx.commit()
+    cur.close()
+    cnx.close()
+    return "1"
+
+@app.route('/playerDelete', methods=['get'])
+def playerDelete():
+    cur, cnx = server_connection()
+    player_name = request.args["name"]
+    stmt_delete_player = f'DELETE FROM Player WHERE Username = "{player_name}";'
+    try:
+        cur.execute(stmt_delete_player)
+        cnx.commit()
+        cur.close()
+        cnx.close()
+        return "1"
+    except:
+        cur.close()
+        cnx.close()
+        return "-1"
+
+@app.route('/playerUpdate', methods = ['get'])
+def playerUpdate():
+    cur, cnx = server_connection()
+    player_name, rank = request.args["name"], request.args["rank"]
+    stmt_update_player = f'UPDATE Player ' \
+                         f'SET PlayerRank = "{rank}" ' \
+                         f'WHERE Username = "{player_name}"'
+    try:
+        cur.execute(stmt_update_player)
+        cnx.commit()
+        cur.close()
+        cnx.close()
+        return "1"
+    except:
+        cur.close()
+        cnx.close()
+        return "-1"
+
+@app.route('/openingQuery', methods = ['get'])
+def openingQuery():
+    cur, cnx = server_connection()
+    openingName = request.args["opening"]
+    stmt_select_opening = f'SELECT Position FROM Opening WHERE Name="{openingName}"'
+    cur.execute(stmt_select_opening)
+    returning_fen = cur.fetchall()
+    cur.close()
+    cnx.close()
+    if not returning_fen:
+        return ""
+    return returning_fen[0]["Position"]
 
 @app.route('/positionQuery', methods = ['get'])
 def positionQuery():
