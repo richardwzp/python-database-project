@@ -7,6 +7,7 @@ import os
 from flask import Flask, redirect, url_for, request
 import json
 
+# given file name, convert the chess game, and store the data in mySQL
 def import_pgn_to_sql(pgn_file_name):
     # logging into sql
     user = "root"
@@ -112,7 +113,7 @@ def import_pgn_to_sql(pgn_file_name):
     os.remove(file_name)
     os.remove(file_info_name)
 
-
+# connect to mySQL server
 def server_connection():
     # logging into sql
     user = "root"
@@ -128,6 +129,7 @@ def server_connection():
 
 app = Flask(__name__)
 @app.route('/update', methods = ['POST'])
+# get complete pgn content, and update database with given chess game
 def update():
     #
     recieved_data = request.json
@@ -140,13 +142,10 @@ def update():
 
     return "sucessful update!"
 
-# TODO: udpate a player
-# TODO: you will be given a name, position, mainline (mainline can be null)
-# TODO: get request - deleteplayer just delete the player
-# TODO: post request - update player - given a json with {name:,rank:,}
 
-# TODO: create/overwrite opening
+
 @app.route('/openingUpdate', methods=['get'])
+# create or update a given opening
 def openingUpdate():
     cur, cnx = server_connection()
     opening_name, opening_fen = request.args["name"], request.args["fen"]
@@ -167,6 +166,7 @@ def openingUpdate():
     return "1"
 
 @app.route('/playerDelete', methods=['get'])
+# delete a given player
 def playerDelete():
     cur, cnx = server_connection()
     player_name = request.args["name"]
@@ -183,6 +183,7 @@ def playerDelete():
         return "-1"
 
 @app.route('/playerUpdate', methods = ['get'])
+# update a given player
 def playerUpdate():
     cur, cnx = server_connection()
     player_name, rank = request.args["name"], request.args["rank"]
@@ -201,6 +202,7 @@ def playerUpdate():
         return "-1"
 
 @app.route('/openingQuery', methods = ['get'])
+# query the database for a fen position of given opening name
 def openingQuery():
     cur, cnx = server_connection()
     openingName = request.args["opening"]
@@ -214,6 +216,7 @@ def openingQuery():
     return returning_fen[0]["Position"]
 
 @app.route('/positionQuery', methods = ['get'])
+# query the database for a fen position of given position name
 def positionQuery():
     # [{player1, player2, player1rank(nullable), player2rank, winner, timecontrol}]
     cur, cnx = server_connection()
@@ -257,7 +260,6 @@ def positionQuery():
 
 
 def convert(data: str):
-    # TODO: make the pgn
     with open("myfile.pgn", "w") as new_pgn:
         new_pgn.write(data)
 
