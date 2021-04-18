@@ -252,7 +252,7 @@ def positionQuery():
 
     all_games = []
     for game_id in all_game_id:
-        stmt_select_game = f'GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, ' \
+        stmt_select_game = f'SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, ' \
                            f'player1.PlayerRank AS BlackPlayerRank, player2.PlayerRank AS WhitePlayerRank, ' \
                            f'Winner, Time.Length AS length, Time.increment AS increment FROM Game ' \
                            f'LEFT JOIN TimeControl AS Time ON Game.TimeControl=Time.ID ' \
