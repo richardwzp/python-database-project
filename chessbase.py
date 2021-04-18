@@ -231,7 +231,7 @@ def playerUpdate():
 def openingQuery():
     cur, cnx = server_connection()
     openingName = request.args["opening"]
-    stmt_select_opening = f'SELECT Position AS position, nexTurn AS turn FROM Opening WHERE Name="{openingName}" ' \
+    stmt_select_opening = f'SELECT Position AS position, NextTurn AS turn FROM Opening WHERE Name="{openingName}" ' \
 
     cur.execute(stmt_select_opening)
     returning_fen = cur.fetchall()
