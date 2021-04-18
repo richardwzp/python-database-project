@@ -191,7 +191,7 @@ def openingUpdate():
     else:
         stmt_insert_variation = f'INSERT INTO OpeningVariations (MainLineName, VariationName) ' \
                                 f'VALUES ("{parent_opening[0]["Name"]}", "{opening_name}");'
-        cur.execute()
+        cur.execute(stmt_insert_variation)
         cnx.commit()
         cur.close()
         cnx.close()
