@@ -268,6 +268,10 @@ def positionQuery():
         all_games[-1]["WhitePlayerRank"] = "no_rank" if not white_rank else black_rank
         # change date to string
         all_games[-1]["date"] = str(all_games[-1]["date"])
+        time = f'{str(all_games[-1]["length"])} | {str(all_games[-1]["increment"])}'
+        all_games[-1]["timeControl"] = time
+        del all_games[-1]["length"]
+        del all_games[-1]["increment"]
 
     cur.close()
     cnx.close()
