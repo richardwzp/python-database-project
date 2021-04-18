@@ -192,7 +192,7 @@ def playerDelete():
     cur.execute(stmt_select_player)
     # player not found
     if cur.fetchall()[0]["playerCount"] == 0:
-        return -1
+        return "-1"
     stmt_delete_player = f'DELETE FROM Player WHERE Username = "{player_name}";'
     try:
         cur.execute(stmt_delete_player)
