@@ -52,8 +52,10 @@ CREATE TABLE IF NOT EXISTS GamePositionRelationship (
 CREATE TABLE Opening (
     Name VARCHAR(64) UNIQUE NOT NULL,
     Position VARCHAR(256) BINARY NOT NULL,
+    NextTurn ENUM ("Black", "White"),
     PRIMARY KEY (Name),
-    FOREIGN KEY (Position) REFERENCES ChessPosition(Position) ON UPDATE RESTRICT ON DELETE RESTRICT
+    FOREIGN KEY (Position) REFERENCES ChessPosition(Position) ON UPDATE RESTRICT ON DELETE RESTRICT,
+    FOREIGN KEY (NextTurn) REFERENCES ChessPosition(NextTurn) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
 # stores the mappings of openings to variation

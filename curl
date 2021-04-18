@@ -1,4 +1,4 @@
-curl http://localhost:5000/openingUpdate\?name\=wzp\&fen\=1
+curl http://localhost:5000/openingUpdate\?name\=French_Defense\&fen\=rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR\&turn\=White
 curl http://localhost:5000/playerUpdate\?name\=wzp\&rank\=master
 
 curl http://localhost:5000/positionQuery\?position\=rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR\&nextMove\=Black

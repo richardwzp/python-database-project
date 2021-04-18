@@ -154,7 +154,7 @@ def update():
 # create or update a given opening
 def openingUpdate():
     cur, cnx = server_connection()
-    opening_name, opening_fen, opening_turn = request.args["name"], request.args["fen"], request.args["turn"]
+    opening_name, opening_fen, opening_turn = " ".join(request.args["name"].split("_")), request.args["fen"], request.args["turn"]
 
     # add the position if it does not exist yet
     stmt_select_position = f'SELECT COUNT(*) AS positionCount FROM ChessPosition ' \
@@ -162,13 +162,14 @@ def openingUpdate():
 
     cur.execute(stmt_select_position)
     if int(cur.fetchall()[0]["openingPosition"]) == 0:
-        stmt_insert = f'INSERT INTO ChessPosition (Position, NextTurn) VALUES ({opening_fen}, {opening_turn});'
+        stmt_insert = f'INSERT INTO ChessPosition (Position, NextTurn) VALUES ("{opening_fen}", "{opening_turn}");'
         cur.execute(stmt_insert)
 
     stmt_select_opening = f'SELECT COUNT(*) AS openingCount FROM Opening WHERE Name = "{opening_name}"'
     cur.execute(stmt_select_opening)
     if int(cur.fetchall()[0]["openingCount"]) == 0:
-        stmt_insert = f'INSERT INTO Opening (Name, Position) VALUES ({opening_name}, {opening_fen});'
+        stmt_insert = f'INSERT INTO Opening (Name, Position, NextTurn) ' \
+                      f'VALUES ("{opening_name}", "{opening_fen}", "{opening_turn}");'
         cur.execute(stmt_insert)
     else:
         stmt_update = f'UPDATE Opening ' \
@@ -225,14 +226,15 @@ def playerUpdate():
 def openingQuery():
     cur, cnx = server_connection()
     openingName = request.args["opening"]
-    stmt_select_opening = f'SELECT Position FROM Opening WHERE Name="{openingName}"'
+    stmt_select_opening = f'SELECT Position, Nexturn FROM Opening WHERE Name="{openingName}" ' \
+
     cur.execute(stmt_select_opening)
     returning_fen = cur.fetchall()
     cur.close()
     cnx.close()
     if not returning_fen:
-        return ""
-    return returning_fen[0]["Position"]
+        return json.dumps({})
+    return json.dumps(returning_fen[0])
 
 @app.route('/positionQuery', methods = ['get'])
 @cross_origin()
