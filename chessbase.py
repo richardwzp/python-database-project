@@ -154,8 +154,10 @@ def update():
 # create or update a given opening
 def openingUpdate():
     cur, cnx = server_connection()
-    opening_name, opening_fen, opening_turn = " ".join(request.args["name"].split("_")), request.args["fen"], request.args["turn"]
-
+    opening_name, opening_fen, opening_turn, opening_mainline = " ".join(request.args["name"].split("_")), \
+                                              request.args["fen"], request.args["turn"], request.args["mainline"]
+    parent_opening_name = opening_name
+    opening_name = opening_name if opening_mainline == "none" else opening_name + ": " + opening_mainline
     # add the position if it does not exist yet
     stmt_select_position = f'SELECT COUNT(*) AS positionCount FROM ChessPosition ' \
                            f'WHERE Position = "{opening_fen}" AND NextTurn = "{opening_turn}";'
@@ -177,10 +179,23 @@ def openingUpdate():
                       f'WHERE Name="{opening_name}";'
         cur.execute(stmt_update)
 
-    cnx.commit()
-    cur.close()
-    cnx.close()
-    return "1"
+    stmt_select_opening_mainline = f'SELECT Name, Position, NextTurn FROM Opening ' \
+                                   f'WHERE Name = "{parent_opening_name}";'
+    cur.execute(stmt_select_opening_mainline)
+    parent_opening = cur.fetchall()
+    if not parent_opening:
+        cnx.commit()
+        cur.close()
+        cnx.close()
+        return "2"
+    else:
+        stmt_insert_variation = f'INSERT INTO OpeningVariations (MainLineName, VariationName) ' \
+                                f'VALUES ("{parent_opening[0]["Name"]}", "{opening_name}");'
+        cur.execute()
+        cnx.commit()
+        cur.close()
+        cnx.close()
+        return "1"
 
 @app.route('/playerDelete', methods=['get'])
 @cross_origin()
