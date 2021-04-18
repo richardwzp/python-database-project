@@ -6,6 +6,10 @@ from math import ceil
 import os
 from flask import Flask, redirect, url_for, request
 import json
+from flask_cors import CORS, cross_origin
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # given file name, convert the chess game, and store the data in mySQL
 def import_pgn_to_sql(pgn_file_name):
@@ -127,8 +131,9 @@ def server_connection():
     return cur, cnx
 
 
-app = Flask(__name__)
+
 @app.route('/update', methods = ['POST'])
+@cross_origin()
 # get complete pgn content, and update database with given chess game
 def update():
     #
@@ -145,6 +150,7 @@ def update():
 
 
 @app.route('/openingUpdate', methods=['get'])
+@cross_origin()
 # create or update a given opening
 def openingUpdate():
     cur, cnx = server_connection()
@@ -166,6 +172,7 @@ def openingUpdate():
     return "1"
 
 @app.route('/playerDelete', methods=['get'])
+@cross_origin()
 # delete a given player
 def playerDelete():
     cur, cnx = server_connection()
@@ -183,6 +190,7 @@ def playerDelete():
         return "-1"
 
 @app.route('/playerUpdate', methods = ['get'])
+@cross_origin()
 # update a given player
 def playerUpdate():
     cur, cnx = server_connection()
@@ -202,6 +210,7 @@ def playerUpdate():
         return "-1"
 
 @app.route('/openingQuery', methods = ['get'])
+@cross_origin()
 # query the database for a fen position of given opening name
 def openingQuery():
     cur, cnx = server_connection()
@@ -216,6 +225,7 @@ def openingQuery():
     return returning_fen[0]["Position"]
 
 @app.route('/positionQuery', methods = ['get'])
+@cross_origin()
 # query the database for a fen position of given position name
 def positionQuery():
     # [{player1, player2, player1rank(nullable), player2rank, winner, timecontrol}]
@@ -275,3 +285,4 @@ if __name__ == '__main__':
      #   content = file.read()
       #  convert(content)
     #positionQuery()
+    # import_pgn_to_sql("wzprichard_vs_ivanchuk86_2021.04.11.pgn")
