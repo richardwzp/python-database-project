@@ -94,4 +94,3 @@ SELECT * FROM ChessPosition;
   INSERT INTO OpeningVariations (MainLineName, VariationName)
   VALUES ("French Defense", "French Defense: Advance variation");
   
-  

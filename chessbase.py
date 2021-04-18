@@ -230,7 +230,7 @@ def playerUpdate():
 # query the database for a fen position of given opening name
 def openingQuery():
     cur, cnx = server_connection()
-    openingName = request.args["opening"]
+    openingName = " ".join(request.args["opening"].split("_"))
     stmt_select_opening = f'SELECT Position AS position, NextTurn AS turn FROM Opening WHERE Name="{openingName}" ' \
 
     cur.execute(stmt_select_opening)
