@@ -288,8 +288,7 @@ def convert(data: str):
 if __name__ == '__main__':
     # run app in debug mode on port 5000
     app.run(debug=False, port=5000)
-    import_pgn_to_sql("wzprichard_vs_pleaslucian_2021.04.03.pgn")
-    import_pgn_to_sql("LPSupi_vs_Hikaru_2021.04.12.pgn")
+
 
     #with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
      #   content = file.read()
