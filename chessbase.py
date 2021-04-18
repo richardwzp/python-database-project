@@ -163,7 +163,7 @@ def openingUpdate():
                            f'WHERE Position = "{opening_fen}" AND NextTurn = "{opening_turn}";'
 
     cur.execute(stmt_select_position)
-    if int(cur.fetchall()[0]["openingPosition"]) == 0:
+    if int(cur.fetchall()[0]["positionCount"]) == 0:
         stmt_insert = f'INSERT INTO ChessPosition (Position, NextTurn) VALUES ("{opening_fen}", "{opening_turn}");'
         cur.execute(stmt_insert)
 
