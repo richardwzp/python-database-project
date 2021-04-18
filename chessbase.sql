@@ -52,10 +52,9 @@ CREATE TABLE IF NOT EXISTS GamePositionRelationship (
 CREATE TABLE Opening (
     Name VARCHAR(64) UNIQUE NOT NULL,
     Position VARCHAR(256) BINARY NOT NULL,
-    NextTurn ENUM ("Black", "White"),
+    NextTurn ENUM ("Black", "White") NOT NULL,
     PRIMARY KEY (Name),
-    FOREIGN KEY (Position) REFERENCES ChessPosition(Position) ON UPDATE RESTRICT ON DELETE RESTRICT,
-    FOREIGN KEY (NextTurn) REFERENCES ChessPosition(NextTurn) ON UPDATE RESTRICT ON DELETE RESTRICT
+    FOREIGN KEY (Position, NextTurn) REFERENCES ChessPosition(Position, NextTurn) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
 # stores the mappings of openings to variation
@@ -88,10 +87,10 @@ SELECT * FROM ChessPosition;
   VALUES ("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR", "White");
   INSERT INTO ChessPosition (Position, NextTurn)
   VALUES ("rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR", "Black");
-  INSERT INTO Opening (Name, Position)
-  VALUES ("French Defense", "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR");
-  INSERT INTO Opening (Name, Position)
-  VALUES ("French Defense: Advance variation", "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR");
+  INSERT INTO Opening (Name, Position, NextTurn)
+  VALUES ("French Defense", "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR", "White");
+  INSERT INTO Opening (Name, Position, NextTurn)
+  VALUES ("French Defense: Advance variation", "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR", "Black");
   INSERT INTO OpeningVariations (MainLineName, VariationName)
   VALUES ("French Defense", "French Defense: Advance variation");
   
