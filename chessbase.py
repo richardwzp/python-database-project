@@ -154,7 +154,17 @@ def update():
 # create or update a given opening
 def openingUpdate():
     cur, cnx = server_connection()
-    opening_name, opening_fen = request.args["name"], request.args["fen"]
+    opening_name, opening_fen, opening_turn = request.args["name"], request.args["fen"], request.args["turn"]
+
+    # add the position if it does not exist yet
+    stmt_select_position = f'SELECT COUNT(*) AS positionCount FROM ChessPosition ' \
+                           f'WHERE Position = "{opening_fen}" AND NextTurn = "{opening_turn}";'
+
+    cur.execute(stmt_select_position)
+    if int(cur.fetchall()[0]["openingPosition"]) == 0:
+        stmt_insert = f'INSERT INTO ChessPosition (Position, NextTurn) VALUES ({opening_fen}, {opening_turn});'
+        cur.execute(stmt_insert)
+
     stmt_select_opening = f'SELECT COUNT(*) AS openingCount FROM Opening WHERE Name = "{opening_name}"'
     cur.execute(stmt_select_opening)
     if int(cur.fetchall()[0]["openingCount"]) == 0:
@@ -242,25 +252,22 @@ def positionQuery():
 
     all_games = []
     for game_id in all_game_id:
-        stmt_select_game = f'SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, Winner, TimeControl' \
-                    f' FROM Game WHERE GameID = {game_id}'
+        stmt_select_game = f'GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, ' \
+                           f'player1.PlayerRank AS BlackPlayerRank, player2.PlayerRank AS WhitePlayerRank, ' \
+                           f'Winner, Time.Length AS length, Time.increment AS increment FROM Game ' \
+                           f'LEFT JOIN TimeControl AS Time ON Game.TimeControl=Time.ID ' \
+                           f'LEFT JOIN Player AS player1 ON BlackPlayer=player1.Username ' \
+                           f'LEFT JOIN Player AS player2 ON WhitePlayer=player2.Username ' \
+                           f'WHERE GameID = {game_id};'
         cur.execute(stmt_select_game)
         all_games.append(cur.fetchall()[0])
 
-        stmt_select_black_player = f'SELECT PlayerRank AS ranking FROM' \
-                                   f' Player WHERE Username = "{all_games[-1]["BlackPlayer"]}"'
-        cur.execute(stmt_select_black_player)
-        all_games[-1]["BlackPlayerRank"] = cur.fetchall()[0]["ranking"]
-
-        stmt_select_white_player = f'SELECT PlayerRank AS ranking FROM' \
-                                   f' Player WHERE Username = "{all_games[-1]["WhitePlayer"]}"'
-        cur.execute(stmt_select_white_player)
-        all_games[-1]["WhitePlayerRank"] = cur.fetchall()[0]["ranking"]
-
-
-    # change date to string
-    for i in all_games:
-        i["date"] = str(i["date"])
+        black_rank = all_games[-1]["BlackPlayerRank"]
+        all_games[-1]["BlackPlayerRank"] = "no_rank" if not black_rank else black_rank
+        white_rank = all_games[-1]["WhitePlayerRank"]
+        all_games[-1]["WhitePlayerRank"] = "no_rank" if not white_rank else black_rank
+        # change date to string
+        all_games[-1]["date"] = str(all_games[-1]["date"])
 
     cur.close()
     cnx.close()
@@ -281,6 +288,7 @@ def convert(data: str):
 if __name__ == '__main__':
     # run app in debug mode on port 5000
     app.run(debug=False, port=5000)
+    import_pgn_to_sql("wzprichard_vs_pleaslucian_2021.04.03.pgn")
     #with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
      #   content = file.read()
       #  convert(content)

@@ -80,3 +80,15 @@ Select * FROM Game;
 Select * FROM TimeControl;
 SELECT * FROM GamePositionRelationship;
 SELECT * FROM ChessPosition;
+
+
+  INSERT INTO ChessPosition (Position, NextTurn)
+  VALUES ("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR", "White");
+  INSERT INTO ChessPosition (Position, NextTurn)
+  VALUES ("rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR", "Black");
+  INSERT INTO Opening (Name, Position)
+  VALUES ("French Defense", "rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR");
+  INSERT INTO Opening (Name, Position)
+  VALUES ("French Defense: Advance variation", "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR");
+  INSERT INTO OpeningVariations (MainLineName, VariationName)
+  VALUES ("French Defense", "French Defense: Advance variation");
