@@ -290,4 +290,4 @@ if __name__ == '__main__':
      #   content = file.read()
       #  convert(content)
     #positionQuery()
-    import_pgn_to_sql("wzprichard_vs_ivanchuk86_2021.04.11.pgn")
+    #import_pgn_to_sql("wzprichard_vs_ivanchuk86_2021.04.11.pgn")
