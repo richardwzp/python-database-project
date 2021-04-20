@@ -1,8 +1,8 @@
-curl http://localhost:5000/openingUpdate\?name\=French_Defense\&fen\=rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR\&turn\=White
+curl http://localhost:5000/openingUpdate\?name\=French_Defense\&fen\=rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR\&turn\=White\&mainline\=none
 curl http://localhost:5000/playerUpdate\?name\=wzp\&rank\=master
 curl http://localhost:5000/playerDelete\?name\=wzp
 
-curl http://localhost:5000/openingQuery\?opening\=rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR 
+curl http://localhost:5000/openingQuery\?opening\=French_Defense 
 
 curl http://localhost:5000/positionQuery\?position\=rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR\&nextMove\=Black
 curl http://localhost:5000/positionQuery\?position\=r1b1kb1r/pp2nppp/1qn1p3/3pP3/3P4/5N2/PP2BPPP/RNBQK2R\&nextMove\=White

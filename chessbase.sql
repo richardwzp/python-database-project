@@ -123,7 +123,7 @@ DROP FUNCTION IF EXISTS if_not_chess_position_then_insert //
 -- add the given opening if it doesn't exist,
 -- update it with given fen if it does
 DROP PROCEDURE IF EXISTS opening_add_or_update //
-	CREATE PROCEDURE opening_add_or_update(IN opening_name VARCHAR(20),
+	CREATE PROCEDURE opening_add_or_update(IN opening_name VARCHAR(256),
     IN fen VARCHAR(256), IN next_turn ENUM("White", "Black"))
 	BEGIN
     
@@ -138,6 +138,7 @@ DROP PROCEDURE IF EXISTS opening_add_or_update //
 	
    
     END //
+
 
 -- add the opening variation, if it exists
 -- return 1 if the variation is added,
@@ -162,6 +163,8 @@ END IF;
 RETURN ret_int;
 
 END //
+select * from player//
+
 
 -- delete this player if it exists,
 -- return -1 if player doesn't exists
@@ -189,16 +192,17 @@ END //
 DROP PROCEDURE IF EXISTS position_query //
 CREATE PROCEDURE position_query(IN fen VARCHAR(256), IN nextMove ENUM("White", "Black"))
 BEGIN
-SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, 
+SELECT Game.GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, 
                            player1.PlayerRank AS BlackPlayerRank, player2.PlayerRank AS WhitePlayerRank, 
                            Winner, Time.Length AS length, Time.increment AS increment FROM Game 
                            LEFT JOIN TimeControl AS Time ON Game.TimeControl=Time.ID 
                            LEFT JOIN Player AS player1 ON BlackPlayer=player1.Username 
                            LEFT JOIN Player AS player2 ON WhitePlayer=player2.Username 
                            JOIN GamePositionRelationship AS rel
-                           ON rel.Position=fen AND NextTurn=next_move AND Game.GameID=rel.GameID;
+                           ON rel.Position=fen AND NextTurn=nextMove AND Game.GameID=rel.GameID;
 END //
-
+                
+                           
 -- query an opening of given name
 DROP PROCEDURE IF EXISTS opening_query //
 CREATE PROCEDURE opening_query(IN opening_name VARCHAR(256))
@@ -211,12 +215,12 @@ END //
 DROP PROCEDURE IF EXISTS update_player //
 CREATE PROCEDURE update_player(IN player_rank VARCHAR(30), IN player_name VARCHAR(256)) 
 BEGIN
+IF EXISTS (SELECT * FROM Player WHERE Username=player_name) THEN
 UPDATE Player 
 SET PlayerRank = player_rank 
-WHERE Username = player_name AND
-EXISTS (SELECT * FROM Player WHERE Username=player_name);
+WHERE Username = player_name;
+END IF;
 END //
-
 
 
 -- procedure creates players if not exist and adds their elo
@@ -299,7 +303,7 @@ DELIMITER ;
 -- Select * FROM TimeControl;
 -- SELECT * FROM GamePositionRelationship;
 -- SELECT * FROM ChessPosition;
-
+  
   INSERT INTO ChessPosition (Position, NextTurn)
   VALUES ("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR", "White");
   INSERT INTO ChessPosition (Position, NextTurn)

@@ -171,23 +171,31 @@ def update():
 def openingUpdate():
     cur, cnx = server_connection()
     opening_name, opening_fen, opening_turn, opening_mainline = " ".join(request.args["name"].split("_")), \
-                                              request.args["fen"], request.args["turn"], " ".join(request.args["mainline"].split("_"))
+                                              request.args["fen"], request.args["turn"], \
+                                                                " ".join(request.args["mainline"].split("_"))
     parent_opening_name = opening_name
     opening_name = opening_name if opening_mainline == "none" else opening_name + ": " + opening_mainline
     # add the position if it does not exist yet
     # sql defined function call
-    stmt_insert_if_not = f'SELECT if_not_chess_position_then_insert();'
+    stmt_insert_if_not = f'SELECT if_not_chess_position_then_insert("{opening_fen}", "{opening_turn}");'
     cur.execute(stmt_insert_if_not)
 
     # either add or update the opening
     cur.callproc("opening_add_or_update", [opening_name, opening_fen, opening_turn])
 
     if opening_mainline == "none":
-        return 2
+        cnx.commit()
+        cur.close()
+        cnx.close()
+        return "2"
     else:
         stmt_add_variation = f'SELECT add_opening_variation("{parent_opening_name}", "{opening_name}") AS openingCount;'
         cur.execute(stmt_add_variation)
-        return 1 if cur.fetchall()[0]["openingCount"] == 1 else 2
+        result = cur.fetchall()[0]["openingCount"]
+        cnx.commit()
+        cur.close()
+        cnx.close()
+        return "1" if result == 1 else "2"
 
 
 @app.route('/playerDelete', methods=['get'])
@@ -198,7 +206,7 @@ def playerDelete():
     player_name = request.args["name"]
     stmt_delete_player = f'SELECT if_exist_delete("{player_name}") AS deleteCount;'
     cur.execute(stmt_delete_player)
-    return cur.fetchall()[0]["deleteCount"]
+    return str(cur.fetchall()[0]["deleteCount"])
 
 
 
@@ -276,7 +284,7 @@ def convert(data: str):
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000
-    # app.run(debug=False, port=5000)
+    app.run(debug=False, port=5000)
 
     #with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
      #   content = file.read()
