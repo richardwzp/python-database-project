@@ -206,6 +206,9 @@ def playerDelete():
     player_name = request.args["name"]
     stmt_delete_player = f'SELECT if_exist_delete("{player_name}") AS deleteCount;'
     cur.execute(stmt_delete_player)
+    cnx.commit()
+    cur.close()
+    cnx.close()
     return str(cur.fetchall()[0]["deleteCount"])
 
 
