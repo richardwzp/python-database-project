@@ -70,19 +70,100 @@ CREATE TABLE OpeningVariations (
 
 
 -- INSERT INTO Player (Username, ELO) VALUES ("wzp", 1500);
-SELECT * FROM Player;
+-- SELECT * FROM Player;
 -- DELETE FROM Player WHERE Username = "wzp";
 
 -- INSERT INTO Game (GameDate, BlackPlayer, WhitePlayer, Winner, TimeControl) VALUES
 --                   (Date("2021-04-03"), "pleaslucian", "wzprichard", "White", null);
 -- insert into TimeControl (Length, Increment) Value(180, 0);
 
-Select * FROM Game;
-Select * FROM TimeControl;
-SELECT * FROM GamePositionRelationship;
-SELECT * FROM ChessPosition;
+DELIMITER //
+
+-- function for selecting
+DROP FUNCTION IF EXISTS if_chess_position_exists //
+CREATE FUNCTION if_chess_position_exists(fen VARCHAR(256), nextTurn VARCHAR(10))
+	RETURNS INT
+    DETERMINISTIC
+    READS SQL DATA
+		BEGIN
+        DECLARE ret_int INT;
+        SELECT COUNT(*) INTO ret_int FROM ChessPosition
+			WHERE Position = fen AND NextTurn = nextTurn;
+        IF ret_int = 0 THEN
+        return 0;
+        ELSE
+        return 1;
+        END IF;
+        END //
+    SELECT if_not_chess_position_then_insert("1", "White") //
+DROP FUNCTION IF EXISTS if_not_chess_position_then_insert //
+	CREATE FUNCTION if_not_chess_position_then_insert(fen VARCHAR(256), nextTurn VARCHAR(10))
+    RETURNS INT
+    DETERMINISTIC
+    READS SQL DATA
+    MODIFIES SQL DATA
+	BEGIN
+    
+    DECLARE ret_int INT;
+    
+	IF if_chess_position_exists(fen, nextTurn) = 0 THEN
+    INSERT INTO ChessPosition (Position, NextTurn) VALUES (fen, nextTurn); 
+    SELECT 1 INTO ret_int;
+    ELSE
+    SELECT 0 INTO ret_int;
+    END IF;
+    
+   RETURN ret_int;
+   
+    END //
+
+DROP PROCEDURE IF EXISTS opening_add_or_update //
+	CREATE PROCEDURE opening_add_or_update(IN opening_name VARCHAR(20),
+    IN fen VARCHAR(256), IN next_turn ENUM("White", "Black"))
+	BEGIN
+    
+    DECLARE opening_exist INT;
+    SELECT COUNT(*) INTO opening_exist FROM Opening WHERE Name = opening_name;
+	IF opening_exist = 0 THEN
+    INSERT INTO Opening (Name, Position, NextTurn) 
+                      VALUES (opening_name, fen, next_turn);
+    ELSE
+    UPDATE Opening SET Position=fen WHERE Name=opening_name;
+    END IF;
+	
+   
+    END //
+
+DROP FUNCTION IF EXISTS add_opening_variation //
+CREATE FUNCTION add_opening_variation (parent_opening_name VARCHAR(256), variation_name VARCHAR(256))
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+MODIFIES SQL DATA
+BEGIN
+DECLARE ret_int INT;
+
+SELECT COUNT(*) INTO ret_int FROM Opening WHERE Name = parent_opening_name;
+IF ret_int = 1 THEN
+INSERT INTO OpeningVariations (MainLineName, VariationName) 
+VALUES (parent_opening_name, variation_name);
+ELSE 
+RETURN ret_int;
+END IF;
+
+RETURN ret_int;
+
+END //
 
 
+DELIMITER ;
+-- SELECT if_chess_position_exists("1", "White");
+-- Select * FROM Game;
+-- Select * FROM TimeControl;
+-- SELECT * FROM GamePositionRelationship;
+-- SELECT * FROM ChessPosition;
+
+/*
   INSERT INTO ChessPosition (Position, NextTurn)
   VALUES ("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR", "White");
   INSERT INTO ChessPosition (Position, NextTurn)
@@ -92,5 +173,5 @@ SELECT * FROM ChessPosition;
   INSERT INTO Opening (Name, Position, NextTurn)
   VALUES ("French Defense: Advance variation", "rnbqkbnr/pp3ppp/4p3/2ppP3/3P4/2P5/PP3PPP/RNBQKBNR", "Black");
   INSERT INTO OpeningVariations (MainLineName, VariationName)
-  VALUES ("French Defense", "French Defense: Advance variation");
+  VALUES ("French Defense", "French Defense: Advance variation");*/
   
