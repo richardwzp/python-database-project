@@ -167,15 +167,14 @@ def openingUpdate():
     stmt_add_opening = f'CALL opening_add_or_update("{opening_name}", "{opening_fen}", "{opening_turn}");'
     cur.execute(stmt_add_opening)
 
-
     stmt_select_opening_mainline = f'SELECT Name, Position, NextTurn FROM Opening ' \
                                    f'WHERE Name = "{parent_opening_name}";'
     cur.execute(stmt_select_opening_mainline)
     if opening_mainline == "none":
         return 2
     else:
-        stmt_add_varation = f'SELECT add_opening_variation("{parent_opening_name}", "{opening_name}") AS openingCount;'
-        cur.execute(stmt_add_varation)
+        stmt_add_variation = f'SELECT add_opening_variation("{parent_opening_name}", "{opening_name}") AS openingCount;'
+        cur.execute(stmt_add_variation)
         return 1 if cur.fetchall()[0]["openingCount"] == 1 else 2
 
 
