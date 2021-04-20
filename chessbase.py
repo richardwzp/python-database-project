@@ -68,7 +68,7 @@ def import_pgn_to_sql(pgn_file_name):
 
         # create time control if not exists
         # create_time_params = [time_control[0], time_control[1]]
-        create_time = f'SELECT create_time_control("{time_control[0]}", "{time_control[1]]}") AS id'
+        create_time = f'SELECT create_time_control("{time_control[0]}", "{time_control[1]}") AS id'
         cur.execute(create_time)
         time_control_id = int(cur.fetchall()[0]["id"])
         # stmt_select_timeControl = f'SELECT ID AS id FROM TimeControl ' \
@@ -274,10 +274,10 @@ def convert(data: str):
 
 if __name__ == '__main__':
     # run app in debug mode on port 5000
-    app.run(debug=False, port=5000)
+    # app.run(debug=False, port=5000)
 
     #with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
      #   content = file.read()
       #  convert(content)
     #positionQuery()
-    # import_pgn_to_sql("wzprichard_vs_ivanchuk86_2021.04.11.pgn")
+    import_pgn_to_sql("wzprichard_vs_ivanchuk86_2021.04.11.pgn")

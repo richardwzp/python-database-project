@@ -217,6 +217,82 @@ WHERE Username = player_name AND
 EXISTS (SELECT * FROM Player WHERE Username=player_name);
 END //
 
+
+
+-- procedure creates players if not exist and adds their elo
+DROP PROCEDURE IF EXISTS create_player_with_elo // 
+CREATE PROCEDURE create_player_with_elo (IN white_player_user_name VARCHAR(64), IN black_player_user_name VARCHAR(64),
+IN white_elo INT, IN black_elo INT)
+BEGIN
+
+DECLARE white_count INT;
+DECLARE black_count INT;
+SELECT COUNT(*) INTO white_count FROM Player WHERE Player.Username = white_player_user_name;
+SELECT COUNT(*) INTO black_count FROM Player WHERE Player.Username = black_player_user_name;
+if white_count = 0 THEN
+INSERT INTO Player (Username, ELO) VALUES (white_player_user_name, white_elo);
+END IF;
+if black_count = 0 THEN
+INSERT INTO Player (Username, ELO) VALUES (black_player_user_name, black_elo);
+END IF;
+
+END //
+
+-- function creates time control if not exists and returns id
+DROP FUNCTION IF EXISTS create_time_control //
+CREATE FUNCTION create_time_control (length INT, increment INT)
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+MODIFIES SQL DATA
+BEGIN
+
+DECLARE id INT;
+DECLARE count INT;
+SELECT COUNT(*) INTO count FROM TimeControl WHERE TimeControl.Length=length AND TimeControl.Increment=increment LIMIT 1;
+
+if count = 0 THEN
+INSERT INTO TimeControl (Length, Increment) Value(length, increment);
+END IF;
+
+SELECT ID INTO id FROM TimeControl WHERE TimeControl.Length=length AND TimeControl.Increment=increment LIMIT 1;
+
+RETURN id;
+END //
+
+-- function inserts game into database and gets the id
+DROP FUNCTION IF EXISTS create_game //
+CREATE FUNCTION create_game (date VARCHAR(32), black_player_user_name VARCHAR(64), white_player_user_name VARCHAR(64), winner VARCHAR(10), time_control_id INT)
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+MODIFIES SQL DATA
+BEGIN
+
+DECLARE id INT;
+
+INSERT INTO Game (GameDate, BlackPlayer, WhitePlayer, Winner, TimeControl) VALUES (Date(date), black_player_user_name, white_player_user_name, winner, time_control_id);
+
+SELECT GameID into id FROM Game WHERE GameDate=Date(date) AND BlackPlayer=black_player_user_name AND WhitePlayer=white_player_user_name AND Winner=winner AND TimeControl=time_control_id ORDER BY GameID DESC LIMIT 1;
+
+RETURN id;
+END //
+
+-- procedure creates a position if not exists and inserts into the gamepositionrelationship
+DROP PROCEDURE IF EXISTS create_position //
+CREATE PROCEDURE create_position(IN fen VARCHAR(256), IN color VARCHAR(10), IN move_number INT, IN game_id INT)
+BEGIN
+
+DECLARE count INT;
+SELECT COUNT(*) INTO count FROM ChessPosition WHERE Position = fen AND NextTurn = color;
+if count = 0 THEN
+INSERT INTO ChessPosition (Position, NextTurn) VALUES (fen, color);
+END IF;
+
+INSERT INTO GamePositionRelationship (MoveNumber, GameID, Position, NextTurn) VALUES (move_number, game_id, fen, color);
+END //
+
+
 DELIMITER ;
 -- SELECT if_chess_position_exists("1", "White");
 -- Select * FROM Game;
