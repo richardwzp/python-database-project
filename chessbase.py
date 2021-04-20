@@ -164,12 +164,8 @@ def openingUpdate():
     cur.execute(stmt_insert_if_not)
 
     # either add or update the opening
-    stmt_add_opening = f'CALL opening_add_or_update("{opening_name}", "{opening_fen}", "{opening_turn}");'
-    cur.execute(stmt_add_opening)
+    cur.callproc("opening_add_or_update", [opening_name, opening_fen, opening_turn])
 
-    stmt_select_opening_mainline = f'SELECT Name, Position, NextTurn FROM Opening ' \
-                                   f'WHERE Name = "{parent_opening_name}";'
-    cur.execute(stmt_select_opening_mainline)
     if opening_mainline == "none":
         return 2
     else:
@@ -196,11 +192,9 @@ def playerDelete():
 def playerUpdate():
     cur, cnx = server_connection()
     player_name, rank = request.args["name"], request.args["rank"]
-    stmt_update_player = f'UPDATE Player ' \
-                         f'SET PlayerRank = "{rank}" ' \
-                         f'WHERE Username = "{player_name}"'
+
     try:
-        cur.execute(stmt_update_player)
+        cur.callproc("update_player", [rank, player_name])
         cnx.commit()
         cur.close()
         cnx.close()
@@ -216,9 +210,7 @@ def playerUpdate():
 def openingQuery():
     cur, cnx = server_connection()
     openingName = " ".join(request.args["opening"].split("_"))
-    stmt_select_opening = f'SELECT Position AS position, NextTurn AS turn FROM Opening WHERE Name="{openingName}" ' \
-
-    cur.execute(stmt_select_opening)
+    cur.callproc("opening_query", [openingName])
     returning_fen = cur.fetchall()
     cur.close()
     cnx.close()
@@ -226,48 +218,33 @@ def openingQuery():
         return json.dumps({})
     return json.dumps(returning_fen[0])
 
+
 @app.route('/positionQuery', methods = ['get'])
 @cross_origin()
 # query the database for a fen position of given position name
 def positionQuery():
-    # [{player1, player2, player1rank(nullable), player2rank, winner, timecontrol}]
     cur, cnx = server_connection()
     fen, next_move = request.args["position"], request.args["nextMove"]
 
-    #fen, next_move = "r1b1kb1r/pp2nppp/1qn1p3/3pP3/3P4/5N2/PP2BPPP/RNBQK2R", "White"
+    cur.callproc("position_query", [fen, next_move])
 
-    stmt_select_chess_position = f'SELECT GameID FROM GamePositionRelationship ' \
-                  f'WHERE Position = "{fen}" AND NextTurn = "{next_move}";'
+    processed_games = cur.fetchall()
 
-    cur.execute(stmt_select_chess_position)
-    all_game_id = [int(i["GameID"]) for i in cur.fetchall()]
-
-    all_games = []
-    for game_id in all_game_id:
-        stmt_select_game = f'SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, ' \
-                           f'player1.PlayerRank AS BlackPlayerRank, player2.PlayerRank AS WhitePlayerRank, ' \
-                           f'Winner, Time.Length AS length, Time.increment AS increment FROM Game ' \
-                           f'LEFT JOIN TimeControl AS Time ON Game.TimeControl=Time.ID ' \
-                           f'LEFT JOIN Player AS player1 ON BlackPlayer=player1.Username ' \
-                           f'LEFT JOIN Player AS player2 ON WhitePlayer=player2.Username ' \
-                           f'WHERE GameID = {game_id};'
-        cur.execute(stmt_select_game)
-        all_games.append(cur.fetchall()[0])
-
-        black_rank = all_games[-1]["BlackPlayerRank"]
-        all_games[-1]["BlackPlayerRank"] = "no_rank" if not black_rank else black_rank
-        white_rank = all_games[-1]["WhitePlayerRank"]
-        all_games[-1]["WhitePlayerRank"] = "no_rank" if not white_rank else black_rank
+    for current_game in processed_games:
+        black_rank = current_game["BlackPlayerRank"]
+        current_game["BlackPlayerRank"] = "no_rank" if not black_rank else black_rank
+        white_rank = current_game["WhitePlayerRank"]
+        current_game["WhitePlayerRank"] = "no_rank" if not white_rank else black_rank
         # change date to string
-        all_games[-1]["date"] = str(all_games[-1]["date"])
-        time = f'{str(all_games[-1]["length"])} | {str(all_games[-1]["increment"])}'
-        all_games[-1]["timeControl"] = time
-        del all_games[-1]["length"]
-        del all_games[-1]["increment"]
+        current_game["date"] = str(current_game["date"])
+        time = f'{str(current_game["length"])} | {str(current_game["increment"])}'
+        current_game["timeControl"] = time
+        del current_game["length"]
+        del current_game["increment"]
 
     cur.close()
     cnx.close()
-    return json.dumps(all_games)
+    return json.dumps(processed_games)
 
 
 
@@ -284,7 +261,6 @@ def convert(data: str):
 if __name__ == '__main__':
     # run app in debug mode on port 5000
     app.run(debug=False, port=5000)
-
 
     #with open("wzprichard_vs_ivanchuk86_2021.04.11.pgn", "r") as file:
      #   content = file.read()

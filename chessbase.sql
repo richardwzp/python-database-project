@@ -166,6 +166,7 @@ END //
 -- delete this player if it exists,
 -- return -1 if player doesn't exists
 -- else return 1
+DROP FUNCTION IF EXISTS if_exist_delete //
 CREATE FUNCTION if_exist_delete(player_name VARCHAR(256))
 RETURNS INT
 DETERMINISTIC
@@ -184,6 +185,37 @@ END IF;
 
 END //
 
+-- given fen and move, give back all games information
+DROP PROCEDURE IF EXISTS position_query //
+CREATE PROCEDURE position_query(IN fen VARCHAR(256), IN nextMove ENUM("White", "Black"))
+BEGIN
+SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer, 
+                           player1.PlayerRank AS BlackPlayerRank, player2.PlayerRank AS WhitePlayerRank, 
+                           Winner, Time.Length AS length, Time.increment AS increment FROM Game 
+                           LEFT JOIN TimeControl AS Time ON Game.TimeControl=Time.ID 
+                           LEFT JOIN Player AS player1 ON BlackPlayer=player1.Username 
+                           LEFT JOIN Player AS player2 ON WhitePlayer=player2.Username 
+                           JOIN GamePositionRelationship AS rel
+                           ON rel.Position="{fen}" AND NextTurn= "{next_move}" AND Game.GameID=rel.GameID;
+END //
+
+-- query an opening of given name
+DROP PROCEDURE IF EXISTS opening_query //
+CREATE PROCEDURE opening_query(IN opening_name VARCHAR(256))
+BEGIN
+SELECT Position AS position, NextTurn AS turn FROM Opening WHERE Name=opening_name;
+END //
+
+
+-- update a player of given name
+DROP PROCEDURE IF EXISTS update_player //
+CREATE PROCEDURE update_player(IN player_rank VARCHAR(30), IN player_name VARCHAR(256)) 
+BEGIN
+UPDATE Player 
+SET PlayerRank = player_rank 
+WHERE Username = player_name AND
+EXISTS (SELECT * FROM Player WHERE Username=player_name);
+END //
 
 DELIMITER ;
 -- SELECT if_chess_position_exists("1", "White");
