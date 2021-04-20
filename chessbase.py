@@ -184,24 +184,11 @@ def openingUpdate():
 def playerDelete():
     cur, cnx = server_connection()
     player_name = request.args["name"]
-    stmt_delete_player = f'SELECT'
+    stmt_delete_player = f'SELECT if_exist_delete("{player_name}") AS deleteCount;'
+    cur.execute(stmt_delete_player)
+    return cur.fetchall()[0]["deleteCount"]
 
-    stmt_select_player = f'SELECT COUNT(*) AS playerCount FROM Player WHERE Username = "{player_name}";'
-    cur.execute(stmt_select_player)
-    # player not found
-    if cur.fetchall()[0]["playerCount"] == 0:
-        return "-1"
-    stmt_delete_player = f'DELETE FROM Player WHERE Username = "{player_name}";'
-    try:
-        cur.execute(stmt_delete_player)
-        cnx.commit()
-        cur.close()
-        cnx.close()
-        return "1"
-    except:
-        cur.close()
-        cnx.close()
-        return "-2"
+
 
 @app.route('/playerUpdate', methods = ['get'])
 @cross_origin()
