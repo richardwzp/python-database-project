@@ -68,9 +68,11 @@ def import_pgn_to_sql(pgn_file_name):
 
         # create time control if not exists
         # create_time_params = [time_control[0], time_control[1]]
-        create_time = f'SELECT create_time_control("{time_control[0]}", "{time_control[1]}") AS id'
+        create_time = f'SELECT create_time_control({time_control[0]}, {time_control[1]}) AS id'
         cur.execute(create_time)
-        time_control_id = int(cur.fetchall()[0]["id"])
+        tmp = cur.fetchall()
+        print(tmp)
+        time_control_id = int(tmp[0]["id"])
         # stmt_select_timeControl = f'SELECT ID AS id FROM TimeControl ' \
         #               f'WHERE TimeControl.Length={time_control[0]} AND TimeControl.Increment={time_control[1]};'
         # cur.execute(stmt_select_timeControl)

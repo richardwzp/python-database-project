@@ -196,7 +196,7 @@ SELECT GameID AS id, GameDate AS date, BlackPlayer, WhitePlayer,
                            LEFT JOIN Player AS player1 ON BlackPlayer=player1.Username 
                            LEFT JOIN Player AS player2 ON WhitePlayer=player2.Username 
                            JOIN GamePositionRelationship AS rel
-                           ON rel.Position="{fen}" AND NextTurn= "{next_move}" AND Game.GameID=rel.GameID;
+                           ON rel.Position=fen AND NextTurn=next_move AND Game.GameID=rel.GameID;
 END //
 
 -- query an opening of given name
@@ -247,17 +247,17 @@ READS SQL DATA
 MODIFIES SQL DATA
 BEGIN
 
-DECLARE id INT;
+DECLARE time_id INT;
 DECLARE count INT;
-SELECT COUNT(*) INTO count FROM TimeControl WHERE TimeControl.Length=length AND TimeControl.Increment=increment LIMIT 1;
+SELECT COUNT(*) INTO count FROM TimeControl WHERE TimeControl.Length=length AND TimeControl.Increment=increment;
 
 if count = 0 THEN
 INSERT INTO TimeControl (Length, Increment) Value(length, increment);
 END IF;
 
-SELECT ID INTO id FROM TimeControl WHERE TimeControl.Length=length AND TimeControl.Increment=increment LIMIT 1;
+SELECT ID INTO time_id FROM TimeControl WHERE TimeControl.Length = length AND TimeControl.Increment = increment LIMIT 1;
 
-RETURN id;
+RETURN time_id;
 END //
 
 -- function inserts game into database and gets the id
@@ -269,13 +269,13 @@ READS SQL DATA
 MODIFIES SQL DATA
 BEGIN
 
-DECLARE id INT;
+DECLARE game_id INT;
 
 INSERT INTO Game (GameDate, BlackPlayer, WhitePlayer, Winner, TimeControl) VALUES (Date(date), black_player_user_name, white_player_user_name, winner, time_control_id);
 
-SELECT GameID into id FROM Game WHERE GameDate=Date(date) AND BlackPlayer=black_player_user_name AND WhitePlayer=white_player_user_name AND Winner=winner AND TimeControl=time_control_id ORDER BY GameID DESC LIMIT 1;
+SELECT GameID into game_id FROM Game WHERE GameDate=Date(date) AND BlackPlayer=black_player_user_name AND WhitePlayer=white_player_user_name AND Winner=winner AND TimeControl=time_control_id ORDER BY GameID DESC LIMIT 1;
 
-RETURN id;
+RETURN game_id;
 END //
 
 -- procedure creates a position if not exists and inserts into the gamepositionrelationship
@@ -283,9 +283,9 @@ DROP PROCEDURE IF EXISTS create_position //
 CREATE PROCEDURE create_position(IN fen VARCHAR(256), IN color VARCHAR(10), IN move_number INT, IN game_id INT)
 BEGIN
 
-DECLARE count INT;
-SELECT COUNT(*) INTO count FROM ChessPosition WHERE Position = fen AND NextTurn = color;
-if count = 0 THEN
+DECLARE pos_count INT;
+SELECT COUNT(*) INTO pos_count FROM ChessPosition WHERE Position = fen AND NextTurn = color;
+if pos_count = 0 THEN
 INSERT INTO ChessPosition (Position, NextTurn) VALUES (fen, color);
 END IF;
 
