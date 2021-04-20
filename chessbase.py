@@ -261,7 +261,7 @@ def positionQuery():
         black_rank = current_game["BlackPlayerRank"]
         current_game["BlackPlayerRank"] = "no_rank" if not black_rank else black_rank
         white_rank = current_game["WhitePlayerRank"]
-        current_game["WhitePlayerRank"] = "no_rank" if not white_rank else black_rank
+        current_game["WhitePlayerRank"] = "no_rank" if not white_rank else white_rank
         # change date to string
         current_game["date"] = str(current_game["date"])
         time = f'{str(current_game["length"])} | {str(current_game["increment"])}'
