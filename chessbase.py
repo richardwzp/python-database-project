@@ -52,49 +52,13 @@ def import_pgn_to_sql(pgn_file_name):
         create_players_args = [white_player_user_name, black_player_user_name, white_elo, black_elo]
         cur.callproc('create_player_with_elo', create_players_args)
 
-        # stmt_select_white_player = f'SELECT count(*) AS resultCount FROM Player WHERE Player.Username="{white_player_user_name}";'
-        # cur.execute(stmt_select_white_player)
-        # result = cur.fetchall()[0]["resultCount"]
-        # if not result:
-        #     stmt_insert_white_player = f'INSERT INTO Player (Username, ELO) VALUES ("{white_player_user_name}", {white_elo});'
-        #     cur.execute(stmt_insert_white_player)
-
-        # stmt_select_black_player = f'SELECT count(*) AS resultCount FROM Player WHERE Player.Username="{black_player_user_name}";'
-        # cur.execute(stmt_select_black_player)
-        # result = cur.fetchall()[0]["resultCount"]
-        # if not result:
-        #     stmt_insert_black_player = f'INSERT INTO Player (Username, ELO) VALUES ("{black_player_user_name}", {black_elo});'
-        #     cur.execute(stmt_insert_black_player)
-
         # create time control if not exists
         # create_time_params = [time_control[0], time_control[1]]
         create_time = f'SELECT create_time_control({time_control[0]}, {time_control[1]}) AS id'
         cur.execute(create_time)
         tmp = cur.fetchall()
-        print(tmp)
         time_control_id = int(tmp[0]["id"])
-        # stmt_select_timeControl = f'SELECT ID AS id FROM TimeControl ' \
-        #               f'WHERE TimeControl.Length={time_control[0]} AND TimeControl.Increment={time_control[1]};'
-        # cur.execute(stmt_select_timeControl)
-        # returning_id = cur.fetchall()
-        # if not returning_id:
-        #     stmt_insert_timeControl = f"insert into TimeControl (Length, Increment) Value({time_control[0]}, {time_control[1]});"
-        #     cur.execute(stmt_insert_timeControl)
-        #     cur.execute(stmt_select_timeControl)
-        #     time_control_id = cur.fetchall()[0]["id"]
-        # else:
-        #     time_control_id = returning_id[0]["id"]
 
-        #game insertion
-        # stmt_insert_game = 'INSERT INTO Game (GameDate, BlackPlayer, WhitePlayer, Winner, TimeControl) VALUES ' + \
-        #               f'(Date("{game_date}"), "{black_player_user_name}", "{white_player_user_name}", "{winner}",{time_control_id});'
-    #     cur.execute(stmt_insert_game)
-
-    # # select game id of current game
-    #     stmt_select_game = f'SELECT GameID AS id FROM Game WHERE GameDate=Date("{game_date}") AND ' \
-    #                        f'BlackPlayer="{black_player_user_name}" AND WhitePlayer="{white_player_user_name}" ' \
-    #                        f'AND Winner="{winner}" AND TimeControl={time_control_id} ORDER BY GameID DESC LIMIT 1;'
-        
         # game insertion
         # select game id of current game
         create_game = f'SELECT create_game("{game_date}", "{black_player_user_name}", "{white_player_user_name}", "{winner}", {time_control_id}) AS id'
@@ -109,20 +73,6 @@ def import_pgn_to_sql(pgn_file_name):
             color = "White" if row[8].lower() == "black" else "Black"
             fen = row[9]
 
-            # # create position if not exists
-            # stmt_select_position = f'SELECT * FROM ChessPosition ' \
-            #                        f'WHERE Position = "{fen}" AND NextTurn = "{color}";'
-            # cur.execute(stmt_select_position)
-            # position_return = cur.fetchall()
-            # if not position_return:
-            #     stmt_insert_position = f'INSERT INTO ChessPosition (Position, NextTurn) ' \
-            #                            f'VALUES ("{fen}", "{color}");'
-            #     cur.execute(stmt_insert_position)
-            # # create gamePosition
-            # stmt_insert_gamePosition = f'INSERT INTO GamePositionRelationship ' \
-            #                            f'(MoveNumber, GameID, Position, NextTurn)' \
-            #                            f' VALUES ({ceil(move_number / 2)}, {game_id}, "{fen}", "{color}");'
-            
             # create position if not exists, create gamePosition
             create_position_args = [fen, color, ceil(move_number/2), game_id]
             cur.callproc('create_position', create_position_args)
