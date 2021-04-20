@@ -176,10 +176,10 @@ DECLARE ret_int INT;
 SELECT COUNT(*) INTO ret_int FROM Player WHERE Username = player_name;
 
 IF ret_int = 0 THEN
-RETURN ret_int;
+RETURN -1;
 ELSE
 DELETE FROM Player WHERE Username = player_name;
-RETURN ret_int;
+RETURN 1;
 END IF;
 
 END //

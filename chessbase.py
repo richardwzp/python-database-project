@@ -184,6 +184,8 @@ def openingUpdate():
 def playerDelete():
     cur, cnx = server_connection()
     player_name = request.args["name"]
+    stmt_delete_player = f'SELECT'
+
     stmt_select_player = f'SELECT COUNT(*) AS playerCount FROM Player WHERE Username = "{player_name}";'
     cur.execute(stmt_select_player)
     # player not found
